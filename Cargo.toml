@@ -1,0 +1,12 @@
+[package]
+name = "aoc2021"
+version = "0.1.0"
+edition = "2021"
+authors = ["Javier Arevalo <javier.arevalo@gmail.com>"]
+
+[dependencies]
+anyhow = "*"
+regex = "*"
+structopt = { version = "*", default-features = false }
+lazy_static = "*"
+random = "*"
