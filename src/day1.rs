@@ -11,6 +11,7 @@ use std::fs;
 //     file: PathBuf,
 // }
 
+// https://adventofcode.com/2020/day/1
 pub fn day1(args: &crate::File) -> Result<()> {
     // Read file
     let contents = fs::read_to_string(&args.file)

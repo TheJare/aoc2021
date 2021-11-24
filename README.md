@@ -6,7 +6,11 @@ I don't know how many days I will be able to participate, but let's give it a sh
 
 Doing it in Rust. Run each day as `cargo run -- <<dayN>> <<params>>` where N is from 1 to 25.
 If I didn't get to do one of the days, it will complain. Just `cargo run` to see the days
-available (they show in the help as SUBCOMMANDS).
+available (they show in the help as SUBCOMMANDS). E.g.
+
+```
+cargo run -- day1 data/day1.txt
+``` 
 
 ## License
 
