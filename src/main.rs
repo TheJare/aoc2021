@@ -14,6 +14,7 @@ pub struct File {
 #[structopt(about = "Advent of Code 2021")]
 enum Aoc2022 {
     Day1(File),
+    Day1_2(File),
 }
 
 fn main() -> Result<()> {
@@ -21,5 +22,6 @@ fn main() -> Result<()> {
     println!("{:?}", opt);
     match opt {
         Aoc2022::Day1(args) => day1::day1(&args),
+        Aoc2022::Day1_2(args) => day1::day1_2(&args),
     }
 }

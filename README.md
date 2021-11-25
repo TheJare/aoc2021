@@ -5,12 +5,13 @@ Check the [Advent of Code site](https://adventofcode.com/) for details
 I don't know how many days I will be able to participate, but let's give it a shot.
 
 Doing it in Rust. Run each day as `cargo run -- <<dayN>> <<params>>` where N is from 1 to 25.
+For part 2 in a day it will typically be `dayN-2`.
 If I didn't get to do one of the days, it will complain. Just `cargo run` to see the days
 available (they show in the help as SUBCOMMANDS). E.g.
 
 ```
 cargo run -- day1 data/day1.txt
-``` 
+```
 
 ## License
 
