@@ -1,6 +1,5 @@
-use anyhow::{anyhow, Context, Result};
-use std::fs;
-use std::path::PathBuf;
+use crate::utils::read_ints_from_file;
+use anyhow::{anyhow, Result};
 
 // For custom arguments, do something like this
 // use std::path::PathBuf;
@@ -12,21 +11,10 @@ use std::path::PathBuf;
 //     file: PathBuf,
 // }
 
-fn read_entries(file: &PathBuf) -> Result<Vec<i32>> {
-    let contents =
-        fs::read_to_string(&file).with_context(|| format!("Failed to read from {:?}", file))?;
-    Ok(contents
-        .lines()
-        .flat_map(|l| l.parse::<i32>())
-        .collect::<Vec<_>>())
-}
-
 // https://adventofcode.com/2020/day/1
 
 pub fn day1(args: &crate::File) -> Result<()> {
-    let nums = read_entries(&args.file)?;
-
-    // nums.iter().for_each(|f| println!("{}", f));
+    let nums = read_ints_from_file(&args.file)?;
 
     // Find the correct entry, functional style
     let entry = nums
@@ -46,8 +34,7 @@ pub fn day1(args: &crate::File) -> Result<()> {
 }
 
 pub fn day1_2(args: &crate::File) -> Result<()> {
-    let nums = read_entries(&args.file)?;
-    // nums.iter().for_each(|f| println!("{}", f));
+    let nums = read_ints_from_file(&args.file)?;
 
     // Find the correct entry, procedural style
     for i in 0..nums.len() {

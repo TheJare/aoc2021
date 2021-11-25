@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 mod day1;
+mod utils;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "File argument")]
