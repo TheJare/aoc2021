@@ -10,3 +10,4 @@ regex = "*"
 structopt = { version = "*", default-features = false }
 lazy_static = "*"
 random = "*"
+itertools = "*"

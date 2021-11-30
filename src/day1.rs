@@ -1,5 +1,6 @@
 use crate::utils::read_ints_from_file;
 use anyhow::{anyhow, Result};
+use itertools::Itertools;
 
 // For custom arguments, do something like this
 // use std::path::PathBuf;
@@ -18,13 +19,10 @@ pub fn day1(args: &crate::File) -> Result<()> {
 
     // Find the correct entry, functional style
     let entry = nums
-        .iter()
-        .enumerate()
-        .flat_map(|(i, f)| {
-            let invf = 2020 - f;
-            nums[0..i].contains(&invf).then(|| f * invf)
-        })
-        .next();
+        .into_iter()
+        .tuple_combinations()
+        .find(|(a, b)| a + b == 2020)
+        .map(|(a, b)| a * b);
 
     // Print outcome and return success code
     match entry {
