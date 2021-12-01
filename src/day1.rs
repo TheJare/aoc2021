@@ -17,9 +17,7 @@ pub fn day1_2(args: &crate::File) -> Result<()> {
     let result = read_ints_from_file(&args.file)?
         .into_iter()
         .tuple_windows()
-        .map(|(a, b, c)| a + b + c)
-        .tuple_windows()
-        .filter(|(a, b)| b > a)
+        .filter(|(a, _, _, b)| b > a)
         .count();
     Ok(println!("Solution is {}", result))
 }
