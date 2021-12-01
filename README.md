@@ -13,6 +13,10 @@ available (they show in the help as SUBCOMMANDS). E.g.
 cargo run -- day1 data/day1.txt
 ```
 
+Note: the event creators requested that data files for the problems are not posted in public.
+See [this post](https://www.reddit.com/r/adventofcode/comments/k99rod/sharing_input_data_were_we_requested_not_to/gf2ukkf/) for details.
+So you need to get your own copy of these files from the AoC site if you want to run my solutions.
+
 ## License
 
 The MIT License (MIT)
