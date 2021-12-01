@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 mod day1;
+mod day1_2020;
 mod utils;
 
 #[derive(Debug, StructOpt)]
@@ -13,16 +14,20 @@ pub struct File {
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Advent of Code 2021")]
-enum Aoc2022 {
-    Day1(File),
+enum AocEntries {
+    Day1_1(File),
     Day1_2(File),
+    Day1_1_2020(File),
+    Day1_2_2020(File),
 }
 
 fn main() -> Result<()> {
-    let opt = Aoc2022::from_args();
+    let opt = AocEntries::from_args();
     println!("{:?}", opt);
     match opt {
-        Aoc2022::Day1(args) => day1::day1(&args),
-        Aoc2022::Day1_2(args) => day1::day1_2(&args),
+        AocEntries::Day1_1(args) => day1::day1_1(&args),
+        AocEntries::Day1_2(args) => day1::day1_2(&args),
+        AocEntries::Day1_1_2020(args) => day1_2020::day1(&args),
+        AocEntries::Day1_2_2020(args) => day1_2020::day1_2(&args),
     }
 }
