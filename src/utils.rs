@@ -20,8 +20,7 @@ pub fn read_from_file(file: &PathBuf) -> Result<Lines<BufReader<File>>> {
 pub fn read_ints_from_file(file: &PathBuf) -> Result<Vec<i32>> {
     let nums = read_from_file(file)?
         .flatten()
-        .flat_map(|l| l.parse::<i32>()) // skip empty or non-numeric lines
-        .collect::<Vec<_>>();
-    // nums.iter().for_each(|f| println!("{}", f));
+        .flat_map(|l| l.parse()) // skip empty or non-numeric lines
+        .collect();
     Ok(nums)
 }
