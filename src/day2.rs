@@ -24,29 +24,17 @@ where
 
 pub fn day2(args: &crate::File) -> Result<()> {
     let (horizontal_pos, depth) = iterate(&args.file, (0, 0), |acc, s, v| match s {
-        "down" => {
-            return (acc.0, acc.1 + v);
-        }
-        "up" => {
-            return (acc.0, acc.1 - v);
-        }
-        "forward" => {
-            return (acc.0 + v, acc.1);
-        }
+        "down" => (acc.0, acc.1 + v),
+        "up" => (acc.0, acc.1 - v),
+        "forward" => (acc.0 + v, acc.1),
         _ => acc,
     })?;
     println!("Result of Part 1 is {}", horizontal_pos * depth);
 
     let (horizontal_pos, depth, _) = iterate(&args.file, (0, 0, 0), |acc, s, v| match s {
-        "down" => {
-            return (acc.0, acc.1, acc.2 + v);
-        }
-        "up" => {
-            return (acc.0, acc.1, acc.2 - v);
-        }
-        "forward" => {
-            return (acc.0 + v, acc.1 + acc.2 * v, acc.2);
-        }
+        "down" => (acc.0, acc.1, acc.2 + v),
+        "up" => return (acc.0, acc.1, acc.2 - v),
+        "forward" => return (acc.0 + v, acc.1 + acc.2 * v, acc.2),
         _ => acc,
     })?;
     println!("Result of Part 2 is {}", horizontal_pos * depth);
