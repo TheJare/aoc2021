@@ -4,12 +4,13 @@ use std::path::PathBuf;
 
 // https://adventofcode.com/2021/day/2
 
-fn iterate<B, F>(file: &PathBuf, initial_value: B, f: F) -> B
+fn iterate<B, F>(file: &PathBuf, initial_value: B, f: F) -> Result<B>
 where
     F: Fn(B, &str, i32) -> B,
 {
-    match read_from_file(&file) {
-        Ok(it) => it.flatten().fold(initial_value, |acc, l| {
+    Ok(read_from_file(&file)?
+        .flatten()
+        .fold(initial_value, |acc, l| {
             let mut split = l.split(' ');
             let command = split.next();
             let amount = split.next().and_then(|a| a.parse::<i32>().ok());
@@ -18,9 +19,7 @@ where
             } else {
                 acc
             }
-        }),
-        _ => initial_value,
-    }
+        }))
 }
 
 pub fn day2(args: &crate::File) -> Result<()> {
@@ -35,7 +34,7 @@ pub fn day2(args: &crate::File) -> Result<()> {
             return (acc.0 + v, acc.1);
         }
         _ => acc,
-    });
+    })?;
     println!("Result of Part 1 is {}", horizontal_pos * depth);
 
     let (horizontal_pos, depth, _) = iterate(&args.file, (0, 0, 0), |acc, s, v| match s {
@@ -49,7 +48,7 @@ pub fn day2(args: &crate::File) -> Result<()> {
             return (acc.0 + v, acc.1 + acc.2 * v, acc.2);
         }
         _ => acc,
-    });
+    })?;
     println!("Result of Part 2 is {}", horizontal_pos * depth);
 
     Ok(())
