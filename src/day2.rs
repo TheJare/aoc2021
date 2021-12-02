@@ -8,8 +8,8 @@ pub fn day2(args: &crate::File) -> Result<()> {
     let (horizontal_pos, depth, aim) =
         read_from_file(&args.file)?
             .flatten()
-            .fold((0, 0, 0), |acc, l| {
-                if let Some((command, amount)) = l.split(' ').next_tuple() {
+            .fold((0, 0, 0), |acc, line| {
+                if let Some((command, amount)) = line.split_whitespace().next_tuple() {
                     return match (command, amount.parse::<i32>()) {
                         ("down", Ok(v)) => (acc.0, acc.1, acc.2 + v),
                         ("up", Ok(v)) => (acc.0, acc.1, acc.2 - v),
