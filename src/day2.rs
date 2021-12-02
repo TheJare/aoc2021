@@ -10,14 +10,12 @@ pub fn day2(args: &crate::File) -> Result<()> {
             .flatten()
             .fold((0, 0, 0), |acc, l| {
                 if let Some((command, amount)) = l.split(' ').next_tuple() {
-                    if let Ok(v) = amount.parse::<i32>() {
-                        return match command {
-                            "down" => (acc.0, acc.1, acc.2 + v),
-                            "up" => (acc.0, acc.1, acc.2 - v),
-                            "forward" => (acc.0 + v, acc.1 + acc.2 * v, acc.2),
-                            _ => acc,
-                        };
-                    }
+                    return match (command, amount.parse::<i32>()) {
+                        ("down", Ok(v)) => (acc.0, acc.1, acc.2 + v),
+                        ("up", Ok(v)) => (acc.0, acc.1, acc.2 - v),
+                        ("forward", Ok(v)) => (acc.0 + v, acc.1 + acc.2 * v, acc.2),
+                        _ => acc,
+                    };
                 }
                 acc
             });
