@@ -11,15 +11,11 @@ fn find_most_common_bit(mask: u64, values: &Vec<u64>) -> u64 {
     mask * (bit_balance >= 0) as u64
 }
 
-fn find_unique_value(width: usize, mut values: Vec<u64>, comparator: u64) -> u64 {
-    for bit in (0..width).rev() {
-        if values.len() == 1 {
-            break;
-        }
-        let cur_mask = 1u64 << bit;
-        let most_common_bit = find_most_common_bit(cur_mask, &values) ^ comparator;
-
-        values.retain(|v| ((v ^ most_common_bit) & cur_mask) == 0);
+fn find_unique_value(mask: u64, mut values: Vec<u64>, comparator: u64) -> u64 {
+    if mask > 0 && values.len() > 1 {
+        let most_common_bit = find_most_common_bit(mask, &values) ^ comparator;
+        values.retain(|v| ((v ^ most_common_bit) & mask) == 0);
+        return find_unique_value(mask >> 1, values, comparator);
     }
     *values.get(0).unwrap_or(&0)
 }
@@ -36,8 +32,8 @@ pub fn day3(args: &crate::File) -> Result<()> {
     let epsilon_rate = (1u64 << width) - 1 - gamma_rate;
     println!("Result of Part 1 is {}", gamma_rate * epsilon_rate);
 
-    let o2_generator_rating = find_unique_value(width, values.clone(), 0);
-    let co2_scrubber_rating = find_unique_value(width, values, !0);
+    let o2_generator_rating = find_unique_value((1 << width) >> 1, values.clone(), 0);
+    let co2_scrubber_rating = find_unique_value((1 << width) >> 1, values, !0);
     println!(
         "Result of Part 2 is {}",
         o2_generator_rating * co2_scrubber_rating
