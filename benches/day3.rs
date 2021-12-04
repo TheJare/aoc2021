@@ -8,7 +8,7 @@ use aoc2021::day3;
 use aoc2021::File;
 
 fn day3_full(c: &mut Criterion) {
-    c.bench_function("day3 full", |b| {
+    c.bench_function("day3_full", |b| {
         b.iter(|| {
             black_box(day3::day3(&File {
                 file: PathBuf::from("data/day4.txt"),
