@@ -13,11 +13,7 @@ random = "*"
 itertools = "*"
 
 [dev-dependencies]
-criterion = "*"
-
-[[bench]]
-name = "day4"
-harness = false
+criterion = {version = "*", features = ["html_reports"] }
 
 [[bin]]
 name = "aoc2021"
@@ -25,3 +21,11 @@ bench = false
 
 [lib]
 bench = false
+
+[[bench]]
+name = "day4"
+harness = false
+
+[[bench]]
+name = "day3"
+harness = false

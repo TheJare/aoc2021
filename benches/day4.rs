@@ -41,5 +41,5 @@ fn day4_run(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, day4_full, day4_read, day4_run);
-criterion_main!(benches);
+criterion_group!(day4, day4_full, day4_read, day4_run);
+criterion_main!(day4);
