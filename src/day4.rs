@@ -52,8 +52,7 @@ fn find_completed_board(boards: &Vec<&mut [i32]>) -> Option<i32> {
         .find_map(|board| is_board_bingo(board).then(|| board_score(&board)))
 }
 
-pub fn day4(args: &crate::File) -> Result<()> {
-    let (moves, mut board_entries) = read_input(&args)?;
+pub fn run(moves: Vec<i32>, mut board_entries: Vec<i32>) -> Result<(i32, i32)> {
     let mut boards = board_entries.chunks_mut(25).collect_vec();
 
     let mut first_winner: Option<i32> = None;
@@ -69,6 +68,13 @@ pub fn day4(args: &crate::File) -> Result<()> {
             })
         })
         .context("Moves exhausted and some board was not complete")?;
+    Ok(result)
+}
+
+pub fn day4(args: &crate::File) -> Result<()> {
+    let (moves, board_entries) = read_input(&args)?;
+
+    let result = run(moves, board_entries)?;
 
     println!("Result of Part 1 is {}", result.0);
     println!("Result of Part 2 is {}", result.1);

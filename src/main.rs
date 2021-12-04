@@ -1,30 +1,6 @@
 use anyhow::Result;
-use std::path::PathBuf;
+use aoc2021::{day1, day1_2020, day2, day3, day4, AocEntries};
 use structopt::StructOpt;
-
-mod day1;
-mod day1_2020;
-mod day2;
-mod day3;
-mod day4;
-mod utils;
-
-#[derive(Debug, StructOpt)]
-#[structopt(about = "File argument")]
-pub struct File {
-    file: PathBuf,
-}
-
-#[derive(Debug, StructOpt)]
-#[structopt(about = "Advent of Code 2021")]
-enum AocEntries {
-    Day1(File),
-    Day2(File),
-    Day3(File),
-    Day4(File),
-    Day1_1_2020(File),
-    Day1_2_2020(File),
-}
 
 fn main() -> Result<()> {
     let opt = AocEntries::from_args();

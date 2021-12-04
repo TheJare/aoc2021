@@ -11,3 +11,17 @@ structopt = { version = "*", default-features = false }
 lazy_static = "*"
 random = "*"
 itertools = "*"
+
+[dev-dependencies]
+criterion = "*"
+
+[[bench]]
+name = "day4"
+harness = false
+
+[[bin]]
+name = "aoc2021"
+bench = false
+
+[lib]
+bench = false
