@@ -11,8 +11,8 @@ pub fn read_input(args: &crate::File) -> Result<(Vec<i32>, Vec<i32>)> {
     let moves = moves
         .map(|line| line.split(",").flat_map(|v| v.parse::<i32>()).collect_vec())
         .context("File does not contain a set of moves")?;
-    let boards = tokens.flat_map(|v| v.parse::<i32>()).collect_vec();
-    Ok((moves, boards))
+    let board_entries = tokens.flat_map(|v| v.parse::<i32>()).collect_vec();
+    Ok((moves, board_entries))
 }
 
 fn is_board_line_complete(board: &[i32], offset: usize, delta: usize) -> bool {
@@ -53,8 +53,8 @@ fn find_completed_board(boards: &Vec<&mut [i32]>) -> Option<i32> {
 }
 
 pub fn day4(args: &crate::File) -> Result<()> {
-    let (moves, mut boards) = read_input(&args)?;
-    let mut boards = boards.chunks_mut(25).collect_vec();
+    let (moves, mut board_entries) = read_input(&args)?;
+    let mut boards = board_entries.chunks_mut(25).collect_vec();
 
     let mut first_winner: Option<i32> = None;
     let result = moves
@@ -65,11 +65,7 @@ pub fn day4(args: &crate::File) -> Result<()> {
             winner.and_then(|score| {
                 first_winner = first_winner.or(winner);
                 boards.retain(|b| !is_board_bingo(b));
-                if boards.is_empty() {
-                    Some((first_winner.unwrap(), score))
-                } else {
-                    None
-                }
+                boards.is_empty().then(|| (first_winner.unwrap(), score))
             })
         })
         .context("Moves exhausted and some board was not complete")?;
