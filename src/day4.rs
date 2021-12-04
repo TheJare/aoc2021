@@ -6,12 +6,12 @@ use itertools::Itertools;
 
 pub fn read_input(args: &crate::File) -> Result<(Vec<i32>, Vec<i32>)> {
     let file = read_file(&args.file)?;
-    let mut nums = file.split_ascii_whitespace();
-    let moves = nums.next();
+    let mut tokens = file.split_ascii_whitespace();
+    let moves = tokens.next();
     let moves = moves
         .map(|line| line.split(",").flat_map(|v| v.parse::<i32>()).collect_vec())
         .context("File does not contain a set of moves")?;
-    let boards = nums.flat_map(|v| v.parse::<i32>()).collect_vec();
+    let boards = tokens.flat_map(|v| v.parse::<i32>()).collect_vec();
     Ok((moves, boards))
 }
 
@@ -59,16 +59,14 @@ pub fn day4(args: &crate::File) -> Result<()> {
     let (moves, mut boards) = read_input(&args)?;
     let mut boards = boards.chunks_mut(25).collect_vec();
 
-    let mut moves_iter = moves.iter();
     let mut first_winner: Option<i32> = None;
-    let result = moves_iter
+    let result = moves
+        .iter()
         .find_map(|&draw| {
             apply_draw(&mut boards, draw);
             let winner = find_completed_board(&boards).map(|score| score * draw);
             winner.and_then(|score| {
-                if first_winner.is_none() {
-                    first_winner = winner;
-                }
+                first_winner = first_winner.or(winner);
                 boards.retain(|b| !is_board_bingo(b));
                 if boards.is_empty() {
                     Some((first_winner.unwrap(), score))
