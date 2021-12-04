@@ -16,21 +16,11 @@ pub fn read_input(args: &crate::File) -> Result<(Vec<i32>, Vec<i32>)> {
 }
 
 fn is_board_line_complete(board: &[i32], offset: usize, delta: usize) -> bool {
-    for i in 0..5 {
-        if board[offset + i * delta] >= 0 {
-            return false;
-        }
-    }
-    true
+    (0..5).all(|i| board[offset + i * delta] < 0)
 }
 
 fn is_board_bingo(board: &[i32]) -> bool {
-    for i in 0..5 {
-        if is_board_line_complete(board, i * 5, 1) || is_board_line_complete(board, i, 5) {
-            return true;
-        }
-    }
-    false
+    (0..5).any(|i| is_board_line_complete(board, i * 5, 1) || is_board_line_complete(board, i, 5))
 }
 
 fn board_score(board: &[i32]) -> i32 {
@@ -56,7 +46,7 @@ fn apply_draw(boards: &mut Vec<&mut [i32]>, draw: i32) {
     }
 }
 
-fn check_boards(boards: &Vec<&mut [i32]>) -> Option<i32> {
+fn find_completed_board(boards: &Vec<&mut [i32]>) -> Option<i32> {
     for board in boards.iter() {
         if is_board_bingo(board) {
             return Some(board_score(&board));
@@ -74,7 +64,7 @@ pub fn day4(args: &crate::File) -> Result<()> {
     let result = moves_iter
         .find_map(|&draw| {
             apply_draw(&mut boards, draw);
-            let winner = check_boards(&boards).map(|score| score * draw);
+            let winner = find_completed_board(&boards).map(|score| score * draw);
             winner.and_then(|score| {
                 if first_winner.is_none() {
                     first_winner = winner;
