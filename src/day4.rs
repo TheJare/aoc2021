@@ -47,12 +47,9 @@ fn apply_draw(boards: &mut Vec<&mut [i32]>, draw: i32) {
 }
 
 fn find_completed_board(boards: &Vec<&mut [i32]>) -> Option<i32> {
-    for board in boards.iter() {
-        if is_board_bingo(board) {
-            return Some(board_score(&board));
-        }
-    }
-    None
+    boards
+        .iter()
+        .find_map(|board| is_board_bingo(board).then(|| board_score(&board)))
 }
 
 pub fn day4(args: &crate::File) -> Result<()> {
