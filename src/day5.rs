@@ -1,7 +1,6 @@
 use crate::utils::read_file;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use itertools::Itertools;
-use std::collections::HashMap;
 
 // https://adventofcode.com/2021/day/5
 
