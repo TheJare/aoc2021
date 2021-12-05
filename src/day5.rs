@@ -15,7 +15,7 @@ pub fn read_input(args: &crate::File) -> Result<(Vec<i32>, i32)> {
     Ok((tokens, max + 1))
 }
 
-fn run_step(floor: &mut Vec<usize>, vents: &Vec<i32>, max: i32, diagonals: bool) -> usize {
+fn run_step(floor: &mut Vec<u8>, vents: &Vec<i32>, max: i32, diagonals: bool) -> usize {
     let mut acc = 0;
     for (&x0, &y0, &x1, &y1) in vents.into_iter().tuples() {
         let (dx, dy) = (x1 - x0, y1 - y0);
@@ -35,7 +35,7 @@ fn run_step(floor: &mut Vec<usize>, vents: &Vec<i32>, max: i32, diagonals: bool)
 }
 
 pub fn run(vents: Vec<i32>, max: i32) -> (usize, usize) {
-    let mut floor = vec![0usize; (max * max) as usize];
+    let mut floor = vec![0u8; (max * max) as usize];
     let step1 = run_step(&mut floor, &vents, max, false);
     (step1, step1 + run_step(&mut floor, &vents, max, true))
 }
