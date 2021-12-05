@@ -22,7 +22,7 @@ fn run_step(vents: &Vec<i32>, allow_diagonals: bool) -> i32 {
         let r = dx.abs().max(dy.abs());
         let (dx, dy) = (dx.signum(), dy.signum());
 
-        if dy == 0 || dx == 0 || allow_diagonals && dx.abs() == dy.abs() {
+        if dy == 0 || dx == 0 || allow_diagonals {
             (0..=r).for_each(|i| {
                 let pos = (x0 + dx * i, y0 + dy * i);
                 floor.insert(pos, floor.get(&pos).unwrap_or(&0) + 1);
