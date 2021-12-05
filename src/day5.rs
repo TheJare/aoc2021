@@ -15,6 +15,7 @@ pub fn read_input(args: &crate::File) -> Result<Vec<i32>> {
 }
 
 fn run_step(floor: &mut HashMap<(i32, i32), usize>, vents: &Vec<i32>, diagonals: bool) -> usize {
+    let mut acc = 0;
     for (&x0, &y0, &x1, &y1) in vents.into_iter().tuples() {
         let (dx, dy) = (x1 - x0, y1 - y0);
         let r = dx.abs().max(dy.abs());
@@ -26,6 +27,7 @@ fn run_step(floor: &mut HashMap<(i32, i32), usize>, vents: &Vec<i32>, diagonals:
                 match floor.get_mut(&pos) {
                     Some(count) => {
                         *count = *count + 1;
+                        acc = acc + (*count == 2) as usize;
                     }
                     None => {
                         floor.insert(pos, 1);
@@ -34,15 +36,13 @@ fn run_step(floor: &mut HashMap<(i32, i32), usize>, vents: &Vec<i32>, diagonals:
             });
         }
     }
-    floor.values().filter(|&&v| v > 1).count()
+    acc
 }
 
 pub fn run(vents: Vec<i32>) -> (usize, usize) {
     let mut floor = HashMap::<(i32, i32), usize>::new();
-    (
-        run_step(&mut floor, &vents, false),
-        run_step(&mut floor, &vents, true),
-    )
+    let step1 = run_step(&mut floor, &vents, false);
+    (step1, step1 + run_step(&mut floor, &vents, true))
 }
 
 pub fn day5(args: &crate::File) -> Result<()> {
