@@ -23,7 +23,14 @@ fn run_step(floor: &mut HashMap<(i32, i32), usize>, vents: &Vec<i32>, diagonals:
         if (!diagonals && (dy == 0 || dx == 0)) || (diagonals && dx != 0 && dy != 0) {
             (0..=r).for_each(|i| {
                 let pos = (x0 + dx * i, y0 + dy * i);
-                floor.insert(pos, floor.get(&pos).unwrap_or(&0) + 1);
+                match floor.get_mut(&pos) {
+                    Some(count) => {
+                        *count = *count + 1;
+                    }
+                    None => {
+                        floor.insert(pos, 1);
+                    }
+                }
             });
         }
     }
