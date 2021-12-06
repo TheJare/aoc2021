@@ -28,13 +28,9 @@ pub fn read_input(file: &PathBuf) -> Result<Hist> {
 
 pub fn run(hist: &mut Hist, days: Range<usize>) -> PopulationCount {
     for _day in days {
-        let gen0 = hist[0];
         // println!("day {} {:?}", _day, hist);
-        for i in 1..hist.len() {
-            hist[i - 1] = hist[i];
-        }
-        hist[6] += gen0;
-        hist[8] = gen0;
+        hist.rotate_left(1);
+        hist[6] += hist[8];
     }
     (*hist).into_iter().sum() // remove mutability for sum() to work
 }
