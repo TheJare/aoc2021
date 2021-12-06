@@ -1,3 +1,4 @@
+use day6::Day6Args;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -7,6 +8,7 @@ pub mod day2;
 pub mod day3;
 pub mod day4;
 pub mod day5;
+pub mod day6;
 pub mod utils;
 
 #[derive(Debug, StructOpt)]
@@ -23,6 +25,7 @@ pub enum AocEntries {
     Day3(File),
     Day4(File),
     Day5(File),
+    Day6(Day6Args),
     Day1_1_2020(File),
     Day1_2_2020(File),
 }

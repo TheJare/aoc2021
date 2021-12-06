@@ -1,0 +1,58 @@
+use crate::utils::read_file;
+use anyhow::Result;
+use std::ops::Range;
+use std::path::PathBuf;
+use structopt::StructOpt;
+
+// https://adventofcode.com/2021/day/5
+
+type Hist = [u128; 9];
+
+#[derive(Debug, StructOpt)]
+#[structopt(about = "File argument")]
+pub struct Day6Args {
+    pub file: PathBuf,
+    #[structopt(default_value = "18")]
+    pub days: usize,
+}
+
+pub fn read_input(file: &PathBuf) -> Result<Hist> {
+    let file = read_file(file)?;
+    let mut hist: Hist = [0u128; 9];
+    file.split(",")
+        .flat_map(|v| v.trim().parse())
+        .for_each(|v: usize| hist[v] = hist[v] + 1);
+    Ok(hist)
+}
+
+fn run_step(hist: &mut Hist, days: Range<usize>) -> u128 {
+    for day in days {
+        let gen0 = hist[0];
+        println!("day {} {:?}", day, hist);
+        for i in 1..hist.len() {
+            hist[i - 1] = hist[i];
+        }
+        hist[6] = hist[6] + gen0;
+        hist[8] = gen0;
+    }
+    (&*hist).into_iter().sum() // remove mutability for sum() to work
+}
+
+pub fn run(hist: &mut Hist, days: Range<usize>) -> u128 {
+    let total = run_step(hist, days);
+    total
+}
+
+pub fn day6(args: &crate::Day6Args) -> Result<()> {
+    let mut hist = read_input(&args.file)?;
+
+    let test_result = run(&mut hist, 0..args.days);
+    let result1 = run(&mut hist, args.days..80);
+    let result2 = run(&mut hist, 80..256);
+
+    println!("Test result is {}", test_result);
+    println!("Result of Part 1 is {}", result1);
+    println!("Result of Part 2 is {}", result2);
+
+    Ok(())
+}
