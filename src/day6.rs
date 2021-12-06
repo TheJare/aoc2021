@@ -22,26 +22,21 @@ pub fn read_input(file: &PathBuf) -> Result<Hist> {
     let mut hist: Hist = [0; 9];
     file.split(",")
         .flat_map(|v| v.trim().parse())
-        .for_each(|v: usize| hist[v] = hist[v] + 1);
+        .for_each(|v: usize| hist[v] += 1);
     Ok(hist)
 }
 
-fn run_step(hist: &mut Hist, days: Range<usize>) -> PopulationCount {
+pub fn run(hist: &mut Hist, days: Range<usize>) -> PopulationCount {
     for _day in days {
         let gen0 = hist[0];
         // println!("day {} {:?}", _day, hist);
         for i in 1..hist.len() {
             hist[i - 1] = hist[i];
         }
-        hist[6] = hist[6] + gen0;
+        hist[6] += gen0;
         hist[8] = gen0;
     }
-    (&*hist).into_iter().sum() // remove mutability for sum() to work
-}
-
-pub fn run(hist: &mut Hist, days: Range<usize>) -> PopulationCount {
-    let total = run_step(hist, days);
-    total
+    (*hist).into_iter().sum() // remove mutability for sum() to work
 }
 
 pub fn day6(args: &crate::Day6Args) -> Result<()> {
