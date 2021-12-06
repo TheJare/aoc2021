@@ -6,7 +6,8 @@ use structopt::StructOpt;
 
 // https://adventofcode.com/2021/day/5
 
-type Hist = [u128; 9];
+type PopulationCount = u64; // good until day 442, then u128 up until day 951
+type Hist = [PopulationCount; 9];
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "File argument")]
@@ -18,17 +19,17 @@ pub struct Day6Args {
 
 pub fn read_input(file: &PathBuf) -> Result<Hist> {
     let file = read_file(file)?;
-    let mut hist: Hist = [0u128; 9];
+    let mut hist: Hist = [0; 9];
     file.split(",")
         .flat_map(|v| v.trim().parse())
         .for_each(|v: usize| hist[v] = hist[v] + 1);
     Ok(hist)
 }
 
-fn run_step(hist: &mut Hist, days: Range<usize>) -> u128 {
-    for day in days {
+fn run_step(hist: &mut Hist, days: Range<usize>) -> PopulationCount {
+    for _day in days {
         let gen0 = hist[0];
-        println!("day {} {:?}", day, hist);
+        // println!("day {} {:?}", _day, hist);
         for i in 1..hist.len() {
             hist[i - 1] = hist[i];
         }
@@ -38,7 +39,7 @@ fn run_step(hist: &mut Hist, days: Range<usize>) -> u128 {
     (&*hist).into_iter().sum() // remove mutability for sum() to work
 }
 
-pub fn run(hist: &mut Hist, days: Range<usize>) -> u128 {
+pub fn run(hist: &mut Hist, days: Range<usize>) -> PopulationCount {
     let total = run_step(hist, days);
     total
 }
@@ -48,7 +49,7 @@ pub fn day6(args: &crate::Day6Args) -> Result<()> {
 
     let test_result = run(&mut hist, 0..args.days);
     let result1 = run(&mut hist, args.days..80);
-    let result2 = run(&mut hist, 80..256);
+    let result2 = run(&mut hist, 80.max(args.days)..256);
 
     println!("Test result is {}", test_result);
     println!("Result of Part 1 is {}", result1);
