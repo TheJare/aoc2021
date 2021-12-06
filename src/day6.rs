@@ -27,7 +27,7 @@ pub fn read_input(file: &PathBuf) -> Result<Hist> {
 }
 
 pub fn run(hist: &mut Hist, days: Range<usize>) -> PopulationCount {
-    for day in days {
+    for _day in days {
         // println!("day {} {:?}", day, hist);
         let gen0 = hist[0];
         hist[0] = hist[1];
