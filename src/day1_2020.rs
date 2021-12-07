@@ -27,7 +27,10 @@ pub fn day1(args: &crate::File) -> Result<()> {
 
     // Print outcome and return success code
     match entry {
-        Some(result) => Ok(println!("Solution is {}", result)),
+        Some(result) => {
+            println!("Solution is {}", result);
+            Ok(())
+        }
         None => Err(anyhow!("No values found")),
     }
 }
@@ -40,7 +43,8 @@ pub fn day1_2(args: &crate::File) -> Result<()> {
         for j in 0..i {
             for k in 0..j {
                 if nums[i] + nums[j] + nums[k] == 2020 {
-                    return Ok(println!("Solution is {}", nums[i] * nums[j] * nums[k]));
+                    println!("Solution is {}", nums[i] * nums[j] * nums[k]);
+                    return Ok(());
                 }
             }
         }

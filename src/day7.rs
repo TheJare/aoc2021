@@ -1,12 +1,12 @@
 use crate::utils::read_file;
 use anyhow::Result;
-use std::path::PathBuf;
+use std::path::Path;
 
 // https://adventofcode.com/2021/day/7
 
-pub fn read_input(file: &PathBuf) -> Result<Vec<i64>> {
+pub fn read_input(file: &Path) -> Result<Vec<i64>> {
     let file = read_file(file)?;
-    Ok(file.split(",").flat_map(|v| v.trim().parse()).collect())
+    Ok(file.split(',').flat_map(|v| v.trim().parse()).collect())
 }
 
 pub fn run(crabs: &[i64]) -> (i64, i64) {

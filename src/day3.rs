@@ -4,7 +4,7 @@ use itertools::Itertools;
 
 // https://adventofcode.com/2021/day/3
 
-fn find_most_common_bit(mask: u64, values: &Vec<u64>) -> u64 {
+fn find_most_common_bit(mask: u64, values: &[u64]) -> u64 {
     let bit_balance = values
         .iter()
         .fold(0, |acc, num| acc + (num & mask != 0) as i32 * 2 - 1);

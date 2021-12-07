@@ -1,7 +1,7 @@
 use crate::utils::read_file;
 use anyhow::Result;
 use std::ops::Range;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 
 // https://adventofcode.com/2021/day/5
@@ -17,10 +17,10 @@ pub struct Day6Args {
     pub days: usize,
 }
 
-pub fn read_input(file: &PathBuf) -> Result<Hist> {
+pub fn read_input(file: &Path) -> Result<Hist> {
     let file = read_file(file)?;
     let mut hist: Hist = [0; 9];
-    file.split(",")
+    file.split(',')
         .flat_map(|v| v.trim().parse())
         .for_each(|v: usize| hist[v] += 1);
     Ok(hist)

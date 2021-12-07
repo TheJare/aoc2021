@@ -9,7 +9,7 @@ pub fn read_input(args: &crate::File) -> Result<(Vec<i32>, Vec<i32>)> {
     let mut tokens = file.split_ascii_whitespace();
     let moves = tokens.next();
     let moves = moves
-        .map(|line| line.split(",").flat_map(|v| v.parse::<i32>()).collect_vec())
+        .map(|line| line.split(',').flat_map(|v| v.parse::<i32>()).collect_vec())
         .context("File does not contain a set of moves")?;
     let board_entries = tokens.flat_map(|v| v.parse::<i32>()).collect_vec();
     Ok((moves, board_entries))
@@ -31,9 +31,9 @@ fn board_score(board: &[i32]) -> i32 {
 fn print_board(board: &[i32]) {
     board.iter().chunks(5).into_iter().for_each(|t| {
         t.for_each(|&f| print!("{:3}", f));
-        println!("");
+        println!();
     });
-    println!("");
+    println!();
 }
 
 fn apply_draw(boards: &mut Vec<&mut [i32]>, draw: i32) {
@@ -46,10 +46,10 @@ fn apply_draw(boards: &mut Vec<&mut [i32]>, draw: i32) {
     }
 }
 
-fn find_completed_board(boards: &Vec<&mut [i32]>) -> Option<i32> {
+fn find_completed_board(boards: &[&mut [i32]]) -> Option<i32> {
     boards
         .iter()
-        .find_map(|board| is_board_bingo(board).then(|| board_score(&board)))
+        .find_map(|board| is_board_bingo(board).then(|| board_score(board)))
 }
 
 pub fn run(moves: Vec<i32>, mut board_entries: Vec<i32>) -> Result<(i32, i32)> {
@@ -72,7 +72,7 @@ pub fn run(moves: Vec<i32>, mut board_entries: Vec<i32>) -> Result<(i32, i32)> {
 }
 
 pub fn day4(args: &crate::File) -> Result<()> {
-    let (moves, board_entries) = read_input(&args)?;
+    let (moves, board_entries) = read_input(args)?;
 
     let result = run(moves, board_entries)?;
 
