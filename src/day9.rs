@@ -1,5 +1,5 @@
 use crate::utils::read_file;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use itertools::Itertools;
 
 // https://adventofcode.com/2021/day/9
@@ -9,6 +9,7 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
 }
+const DIRS: [(i32, i32); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
 
 impl Map {
     pub fn is_valid(&self, x: i32, y: i32) -> bool {
@@ -25,10 +26,9 @@ impl Map {
 
     pub fn get_risk_level(&self, x: i32, y: i32) -> usize {
         let v = self.get_value(x, y);
-        if self.get_value(x - 1, y) > v
-            && self.get_value(x + 1, y) > v
-            && self.get_value(x, y - 1) > v
-            && self.get_value(x, y + 1) > v
+        if DIRS
+            .iter()
+            .all(|&(dx, dy)| self.get_value(x + dx, y + dy) > v)
         {
             v as usize + 1
         } else {
@@ -44,18 +44,11 @@ impl Map {
                 if self.get_value(x, y) < 9 {
                     size += 1;
                     self.cells[(x + y * self.width) as usize] = 9;
-                    if self.get_value(x - 1, y) < 9 {
-                        stack.push((x - 1, y));
-                    }
-                    if self.get_value(x + 1, y) < 9 {
-                        stack.push((x + 1, y));
-                    }
-                    if self.get_value(x, y - 1) < 9 {
-                        stack.push((x, y - 1));
-                    }
-                    if self.get_value(x, y + 1) < 9 {
-                        stack.push((x, y + 1));
-                    }
+                    DIRS.iter().for_each(|&(dx, dy)| {
+                        if self.get_value(x + dx, y + dy) < 9 {
+                            stack.push((x + dx, y + dy));
+                        }
+                    });
                 }
             }
         }
