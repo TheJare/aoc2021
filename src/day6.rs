@@ -4,7 +4,7 @@ use std::ops::Range;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 
-// https://adventofcode.com/2021/day/5
+// https://adventofcode.com/2021/day/6
 
 type PopulationCount = u64; // good until day 442, then u128 up until day 951
 type Hist = [PopulationCount; 9];

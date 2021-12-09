@@ -26,7 +26,7 @@ fn day6_run(c: &mut Criterion) {
     let r = day6::read_input(&PathBuf::from("data/day6.txt")).unwrap();
     c.bench_function("day6_run", |b| {
         b.iter_batched(
-            || r.clone(),
+            || r,
             |mut r| black_box(day6::run(&mut r, 0..256)),
             criterion::BatchSize::SmallInput,
         )
