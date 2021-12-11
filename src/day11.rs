@@ -37,8 +37,7 @@ impl Map {
         }
         self.cells
             .iter_mut()
-            .filter(|c| **c == 10)
-            .map(|c| *c = 0)
+            .filter_map(|c| (*c == 10).then(|| *c = 0))
             .count()
     }
 }
@@ -71,7 +70,7 @@ pub fn run(map: &mut Map) -> (usize, usize) {
                     Err(flashes + num_flashes)
                 }
             });
-            // Track result of part 2 in an Option once found
+            // Track result of part 2 in an Option, Some once found
             let steps_to_sync = prev_steps
                 .or_else(|| (num_flashes == (map.width * map.height) as usize).then(|| step));
             // If both results are complete, stop folding and return them in a Done
