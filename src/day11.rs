@@ -23,14 +23,14 @@ impl Map {
         x >= 0 && x < self.width && y >= 0 && y < self.height
     }
 
-    pub fn value(&mut self, x: i32, y: i32) -> Option<&mut i8> {
+    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut i8> {
         self.is_valid(x, y)
             .then(|| self.cells.get_mut((x + y * self.width) as usize))
             .flatten()
     }
 
     pub fn increase_value(&mut self, x: i32, y: i32) {
-        if let Some(v) = self.value(x, y) {
+        if let Some(v) = self.get_mut(x, y) {
             if *v >= 9 {
                 *v = -1;
                 DIRS.iter()
