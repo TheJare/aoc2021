@@ -4,7 +4,7 @@ use itertools::FoldWhile::{Continue, Done};
 use itertools::{iproduct, Itertools};
 use lazy_static::lazy_static;
 
-// https://adventofcode.com/2021/day/9
+// https://adventofcode.com/2021/day/11
 
 pub struct Map {
     pub cells: Vec<i8>,
