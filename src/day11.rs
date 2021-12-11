@@ -1,6 +1,8 @@
 use crate::utils::read_file;
 use anyhow::Result;
-use itertools::Itertools;
+use itertools::FoldWhile::{Continue, Done};
+use itertools::{iproduct, Itertools};
+use lazy_static::lazy_static;
 
 // https://adventofcode.com/2021/day/9
 
@@ -9,28 +11,22 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
 }
-const DIRS: [(i32, i32); 8] = [
-    (-1, 0),
-    (1, 0),
-    (0, -1),
-    (0, 1),
-    (-1, -1),
-    (-1, 1),
-    (1, 1),
-    (1, -1),
-];
+
+lazy_static! {
+    static ref DIRS: Vec<(i32, i32)> = iproduct!(-1..=1, -1..=1)
+        .filter(|&(x, y)| x != 0 || y != 0)
+        .collect_vec();
+}
 
 impl Map {
     pub fn is_valid(&self, x: i32, y: i32) -> bool {
         x >= 0 && x < self.width && y >= 0 && y < self.height
     }
 
-    pub fn get_value(&self, x: i32, y: i32) -> i8 {
-        if self.is_valid(x, y) {
-            self.cells[(x + y * self.width) as usize]
-        } else {
-            0
-        }
+    pub fn value(&mut self, x: i32, y: i32) -> Option<&mut i8> {
+        self.is_valid(x, y)
+            .then(|| self.cells.get_mut((x + y * self.width) as usize))
+            .flatten()
     }
 
     pub fn set_value(&mut self, x: i32, y: i32, v: i8) {
@@ -40,24 +36,25 @@ impl Map {
     }
 
     pub fn increase_value(&mut self, x: i32, y: i32) {
-        let v = self.get_value(x, y);
-        if v >= 9 {
-            self.set_value(x, y, -1);
-            for (dx, dy) in DIRS.iter() {
-                if self.is_valid(x, y) {
-                    self.increase_value(x + dx, y + dy);
-                }
+        if let Some(v) = self.value(x, y) {
+            if *v >= 9 {
+                self.set_value(x, y, -1);
+                DIRS.iter()
+                    .map(|(dx, dy)| (x + dx, y + dy))
+                    .for_each(|(x, y)| {
+                        if self.is_valid(x, y) {
+                            self.increase_value(x, y)
+                        }
+                    });
+            } else if *v >= 0 {
+                *v += 1;
             }
-        } else if v >= 0 {
-            self.set_value(x, y, v + 1);
         }
     }
 
     pub fn sim(&mut self) -> usize {
-        for y in 0..self.height {
-            for x in 0..self.width {
-                self.increase_value(x, y);
-            }
+        for (y, x) in iproduct!(0..self.height, 0..self.width) {
+            self.increase_value(x, y);
         }
         self.cells
             .iter_mut()
@@ -83,28 +80,37 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
     })
 }
 
-pub fn run(map: &mut Map) -> Result<(usize, usize)> {
-    let mut r1 = 0;
-    let mut r2 = usize::MAX;
-    for step in 1..usize::MAX {
+pub fn run(map: &mut Map) -> (usize, usize) {
+    let l = (1..usize::MAX).fold_while((Err(0), None), |acc, step| {
         let num_flashes = map.sim();
-        if step <= 100 {
-            r1 += num_flashes;
+        let cur = (
+            acc.0.or_else(|flashes| {
+                if step > 100 {
+                    Ok(flashes)
+                } else {
+                    Err(flashes + num_flashes)
+                }
+            }),
+            acc.1
+                .or_else(|| (num_flashes == (map.width * map.height) as usize).then(|| step)),
+        );
+        if let (Ok(_), Some(_)) = cur {
+            Done(cur)
+        } else {
+            Continue(cur)
         }
-        if num_flashes == (map.width * map.height) as usize {
-            r2 = step
-        }
-        if step > 100 && r2 != usize::MAX {
-            break;
-        }
+    });
+    if let (Ok(r1), Some(r2)) = l.into_inner() {
+        (r1, r2)
+    } else {
+        (0, 0)
     }
-    Ok((r1, r2))
 }
 
 pub fn day11(args: &crate::File) -> Result<()> {
     let mut map = read_input(args)?;
 
-    let result = run(&mut map)?;
+    let result = run(&mut map);
 
     println!("Result of Part 1 is {}", result.0);
     println!("Result of Part 2 is {}", result.1);
