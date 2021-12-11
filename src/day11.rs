@@ -34,12 +34,7 @@ impl Map {
             if *v >= 9 {
                 *v = -1;
                 DIRS.iter()
-                    .map(|(dx, dy)| (x + dx, y + dy))
-                    .for_each(|(x, y)| {
-                        if self.is_valid(x, y) {
-                            self.increase_value(x, y)
-                        }
-                    });
+                    .for_each(|(dx, dy)| self.increase_value(x + dx, y + dy));
             } else if *v >= 0 {
                 *v += 1;
             }
@@ -75,19 +70,18 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
 }
 
 pub fn run(map: &mut Map) -> (usize, usize) {
-    let l = (1..usize::MAX).fold_while((Err(0), None), |acc, step| {
+    let l = (1..usize::MAX).fold_while((Err(0), None), |(prev_flashes, prev_steps), step| {
         let num_flashes = map.sim();
-        let cur = (
-            acc.0.or_else(|flashes| {
-                if step > 100 {
-                    Ok(flashes)
-                } else {
-                    Err(flashes + num_flashes)
-                }
-            }),
-            acc.1
-                .or_else(|| (num_flashes == (map.width * map.height) as usize).then(|| step)),
-        );
+        let total_flashes = prev_flashes.or_else(|flashes| {
+            if step > 100 {
+                Ok(flashes)
+            } else {
+                Err(flashes + num_flashes)
+            }
+        });
+        let steps_to_sync =
+            prev_steps.or_else(|| (num_flashes == (map.width * map.height) as usize).then(|| step));
+        let cur = (total_flashes, steps_to_sync);
         if let (Ok(_), Some(_)) = cur {
             Done(cur)
         } else {
