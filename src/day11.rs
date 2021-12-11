@@ -2,41 +2,31 @@ use crate::utils::read_file;
 use anyhow::Result;
 use itertools::FoldWhile::{Continue, Done};
 use itertools::{iproduct, Itertools};
-use lazy_static::lazy_static;
 
 // https://adventofcode.com/2021/day/11
 
 pub struct Map {
-    pub cells: Vec<i8>,
+    pub cells: Vec<u8>,
     pub width: i32,
     pub height: i32,
 }
 
-lazy_static! {
-    static ref DIRS: Vec<(i32, i32)> = iproduct!(-1..=1, -1..=1)
-        .filter(|&(x, y)| x != 0 || y != 0)
-        .collect_vec();
-}
-
 impl Map {
-    pub fn is_valid(&self, x: i32, y: i32) -> bool {
-        x >= 0 && x < self.width && y >= 0 && y < self.height
-    }
-
-    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut i8> {
-        self.is_valid(x, y)
-            .then(|| self.cells.get_mut((x + y * self.width) as usize))
-            .flatten()
+    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut u8> {
+        self.cells.get_mut((x + y * self.width) as usize)
     }
 
     pub fn increase_value(&mut self, x: i32, y: i32) {
         if let Some(v) = self.get_mut(x, y) {
-            if *v >= 9 {
-                *v = -1;
-                DIRS.iter()
-                    .for_each(|(dx, dy)| self.increase_value(x + dx, y + dy));
-            } else if *v >= 0 {
+            if *v < 10 {
                 *v += 1;
+                if *v == 10 {
+                    iproduct!(
+                        0.max(y - 1)..self.height.min(y + 2),
+                        0.max(x - 1)..self.width.min(x + 2)
+                    )
+                    .for_each(|(y, x)| self.increase_value(x, y));
+                }
             }
         }
     }
@@ -47,7 +37,7 @@ impl Map {
         }
         self.cells
             .iter_mut()
-            .filter(|c| **c < 0)
+            .filter(|c| **c == 10)
             .map(|c| *c = 0)
             .count()
     }
@@ -59,7 +49,7 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
     let cells = file
         .chars()
         .filter(char::is_ascii_digit)
-        .map(|c| (c as i8) - b'0' as i8)
+        .map(|c| (c as u8) - b'0')
         .collect_vec();
     let width = cells.len() / height;
     Ok(Map {
@@ -70,29 +60,30 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
 }
 
 pub fn run(map: &mut Map) -> (usize, usize) {
-    let l = (1..usize::MAX).fold_while((Err(0), None), |(prev_flashes, prev_steps), step| {
-        let num_flashes = map.sim();
-        let total_flashes = prev_flashes.or_else(|flashes| {
-            if step > 100 {
-                Ok(flashes)
+    let (r1, r2) = (1..usize::MAX)
+        .fold_while((Err(0), None), |(prev_flashes, prev_steps), step| {
+            let num_flashes = map.sim();
+            // Track result of part 1 in a Result, Ok once found
+            let total_flashes = prev_flashes.or_else(|flashes| {
+                if step > 100 {
+                    Ok(flashes)
+                } else {
+                    Err(flashes + num_flashes)
+                }
+            });
+            // Track result of part 2 in an Option once found
+            let steps_to_sync = prev_steps
+                .or_else(|| (num_flashes == (map.width * map.height) as usize).then(|| step));
+            // If both results are complete, stop folding and return them in a Done
+            let cur = (total_flashes, steps_to_sync);
+            if let (Ok(_), Some(_)) = cur {
+                Done(cur)
             } else {
-                Err(flashes + num_flashes)
+                Continue(cur)
             }
-        });
-        let steps_to_sync =
-            prev_steps.or_else(|| (num_flashes == (map.width * map.height) as usize).then(|| step));
-        let cur = (total_flashes, steps_to_sync);
-        if let (Ok(_), Some(_)) = cur {
-            Done(cur)
-        } else {
-            Continue(cur)
-        }
-    });
-    if let (Ok(r1), Some(r2)) = l.into_inner() {
-        (r1, r2)
-    } else {
-        (0, 0)
-    }
+        })
+        .into_inner();
+    (r1.unwrap(), r2.unwrap())
 }
 
 pub fn day11(args: &crate::File) -> Result<()> {
