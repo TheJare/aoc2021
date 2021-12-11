@@ -29,16 +29,10 @@ impl Map {
             .flatten()
     }
 
-    pub fn set_value(&mut self, x: i32, y: i32, v: i8) {
-        if self.is_valid(x, y) {
-            self.cells[(x + y * self.width) as usize] = v;
-        }
-    }
-
     pub fn increase_value(&mut self, x: i32, y: i32) {
         if let Some(v) = self.value(x, y) {
             if *v >= 9 {
-                self.set_value(x, y, -1);
+                *v = -1;
                 DIRS.iter()
                     .map(|(dx, dy)| (x + dx, y + dy))
                     .for_each(|(x, y)| {
