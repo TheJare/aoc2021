@@ -30,9 +30,7 @@ fn day12_run(c: &mut Criterion) {
         file: PathBuf::from("data/day12.txt"),
     })
     .unwrap();
-    c.bench_function("day12_run", |b| {
-        b.iter(|| black_box(day12::run(r.borrow_dependent())))
-    });
+    c.bench_function("day12_run", |b| b.iter(|| black_box(day12::run(&r))));
 }
 
 criterion_group!(day12, day12_full, day12_read, day12_run);
