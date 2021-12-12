@@ -6,7 +6,12 @@ use std::cmp::Ordering;
 // https://adventofcode.com/2021/day/12
 
 #[derive(Debug)]
-pub struct Map(Vec<Vec<usize>>, usize, usize, usize);
+pub struct Map {
+    pub map: Vec<Vec<usize>>,
+    pub start: usize,
+    pub end: usize,
+    pub smallcave_min_index: usize,
+}
 
 pub fn read_input(args: &crate::File) -> Result<Map> {
     let file = read_file(&args.file)?;
@@ -37,20 +42,25 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
             }
         }
     }
-    Ok(Map(map, start, end, smallcave_min_index))
+    Ok(Map {
+        map,
+        start,
+        end,
+        smallcave_min_index,
+    })
 }
 
 fn advance(map: &Map, node: usize, visited: u32, long_path: bool) -> (usize, usize) {
     let (mut r1, mut r2) = (0, 0);
 
-    let targets = &map.0[node];
+    let targets = &map.map[node];
     for &target in targets.iter() {
         let target_bit = 1 << target;
-        if target == map.2 {
+        if target == map.end {
             r1 += !long_path as usize;
             r2 += 1;
         } else {
-            let is_visited = target >= map.3 && visited & target_bit != 0;
+            let is_visited = target >= map.smallcave_min_index && visited & target_bit != 0;
             if !long_path || !is_visited {
                 let r = advance(map, target, visited | target_bit, long_path || is_visited);
                 r1 += r.0;
@@ -63,7 +73,7 @@ fn advance(map: &Map, node: usize, visited: u32, long_path: bool) -> (usize, usi
 
 pub fn run(map: &Map) -> (usize, usize) {
     // println!("map contains {} nodes: {:?}", map.0.len(), map);
-    advance(map, map.1, 0, false)
+    advance(map, map.start, 0, false)
 }
 
 pub fn day12(args: &crate::File) -> Result<()> {
