@@ -95,7 +95,7 @@ fn advance<'a>(
 }
 
 pub fn run(map: &Graph) -> (usize, usize) {
-    println!("map contains {} nodes: {:?}", map.len(), map);
+    // println!("map contains {} nodes: {:?}", map.len(), map);
     let (r1, r2) = advance(map, "start", &mut HashSet::new(), false, "start");
     (r1, r1 + r2)
 }
