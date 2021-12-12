@@ -1,5 +1,5 @@
 use crate::utils::read_file;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use itertools::Itertools;
 use std::cmp::Ordering;
 
@@ -13,8 +13,14 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
     let mut nodes = file.split(|c: char| !c.is_ascii_alphabetic()).collect_vec();
     nodes.sort_unstable();
     nodes.dedup();
-    let start = nodes.binary_search(&"start").unwrap();
-    let end = nodes.binary_search(&"end").unwrap();
+    let start = nodes
+        .binary_search(&"start")
+        .ok()
+        .context("can't find start node")?;
+    let end = nodes
+        .binary_search(&"end")
+        .ok()
+        .context("can't find end node")?;
     let smallcave_min_index = nodes.partition_point(|&s| s.cmp("a") == Ordering::Less);
     let mut map = vec![0u32; nodes.len()];
     for line in file.split_ascii_whitespace() {
@@ -37,9 +43,7 @@ fn advance(map: &Map, node: usize, visited: u32, long_path: bool) -> (usize, usi
         let target_bit = 1 << target;
         if target != map.1 && map.0[node] & target_bit != 0 {
             if target == map.2 {
-                if !long_path {
-                    r1 += 1;
-                }
+                r1 += !long_path as usize;
                 r2 += 1;
             } else {
                 let is_visited = target >= map.3 && visited & target_bit != 0;
