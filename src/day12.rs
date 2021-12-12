@@ -29,8 +29,12 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
                 nodes.binary_search(&a.trim()).unwrap(),
                 nodes.binary_search(&b.trim()).unwrap(),
             );
-            map[a] |= 1 << b;
-            map[b] |= 1 << a;
+            if b != start {
+                map[a] |= 1 << b;
+            }
+            if a != start {
+                map[b] |= 1 << a;
+            }
         }
     }
     Ok(Map(map, start, end, smallcave_min_index))
@@ -39,9 +43,13 @@ pub fn read_input(args: &crate::File) -> Result<Map> {
 fn advance(map: &Map, node: usize, visited: u32, long_path: bool) -> (usize, usize) {
     let (mut r1, mut r2) = (0, 0);
 
+    let targets = map.0[node];
     for target in 0..map.0.len() {
         let target_bit = 1 << target;
-        if target != map.1 && map.0[node] & target_bit != 0 {
+        if target_bit > targets {
+            break;
+        }
+        if targets & target_bit != 0 {
             if target == map.2 {
                 r1 += !long_path as usize;
                 r2 += 1;
