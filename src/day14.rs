@@ -5,8 +5,8 @@ use std::collections::HashMap;
 
 // https://adventofcode.com/2021/day/14
 
-type Pair = (char, char);
-pub struct Input(String, HashMap<Pair, char>);
+pub type Pair = (char, char);
+pub struct Input(pub String, pub HashMap<Pair, char>);
 
 pub fn read_input(args: &crate::File) -> Result<Input> {
     let file = read_file(&args.file)?;
