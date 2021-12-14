@@ -16,6 +16,7 @@ pub mod day10;
 pub mod day11;
 pub mod day12;
 pub mod day13;
+pub mod day14;
 pub mod utils;
 
 #[derive(Debug, StructOpt)]
@@ -40,6 +41,7 @@ pub enum AocEntries {
     Day11(File),
     Day12(File),
     Day13(File),
+    Day14(File),
     Day1_1_2020(File),
     Day1_2_2020(File),
 }
