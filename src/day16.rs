@@ -22,7 +22,6 @@ pub fn read_input(args: &crate::File) -> Result<Vec<u8>> {
         .tuples()
         .map(|(h, l)| (hex_value(h) << 4) | hex_value(l))
         .collect_vec();
-    println!("{:?}", input);
     Ok(input)
 }
 
@@ -55,30 +54,20 @@ impl<'a> Decoder<'a> {
 
     pub fn get(&mut self, n: usize) -> usize {
         if self.pos + n <= self.len {
-            let mut pending = n;
             let mut v = 0usize;
-            while pending > 0 {
-                let bpos = self.pos & 7;
-                let bit = ((self.source[self.pos >> 3] >> (7 - bpos)) & 1) as usize;
-                v = (v << 1) + bit;
-                // println!(
-                //     "getting bit {} -> {} of {} (byte is {})",
-                //     self.pos,
-                //     bit,
-                //     pending,
-                //     self.source[self.pos >> 3]
-                // );
-                self.pos += 1;
-                pending -= 1;
+            for nbit in self.pos..(self.pos + n) {
+                let bpos = 7 - (nbit & 7);
+                let bit = ((self.source[nbit / 8] >> bpos) & 1) as usize;
+                v = v * 2 + bit;
             }
-            // println!("value {}", v);
+            self.pos += n;
             v
         } else {
             panic!("ran out of bits");
         }
     }
 
-    pub fn get_contents(&mut self, indent: usize) -> (usize, usize) {
+    pub fn get_contents(&mut self) -> (usize, usize) {
         let mut version = self.get(3);
         let ptype = self.get(3);
         let mut value = 0;
@@ -90,37 +79,22 @@ impl<'a> Decoder<'a> {
                     break;
                 }
             }
-            println!(
-                "{:indent$}version {} op {} value {}",
-                "",
-                version,
-                ptype,
-                value,
-                indent = indent
-            );
         } else {
-            println!(
-                "{:indent$}version {} op {}",
-                "",
-                version,
-                ptype,
-                indent = indent
-            );
             let len_type = self.get(1);
             let mut values = vec![0; 0];
             if len_type == 0 {
                 let subp_len = self.get(15);
                 let mut sub_decoder = Decoder::with_pos(self.source, self.pos, subp_len);
+                self.pos += subp_len;
                 while sub_decoder.bits_left() > 0 {
-                    let (versions, value) = sub_decoder.get_contents(indent + 2);
+                    let (versions, value) = sub_decoder.get_contents();
                     version += versions;
                     values.push(value);
                 }
-                self.pos += subp_len;
             } else {
                 let subp_num = self.get(11);
                 for _ in 0..subp_num {
-                    let (versions, value) = self.get_contents(indent + 2);
+                    let (versions, value) = self.get_contents();
                     version += versions;
                     values.push(value);
                 }
@@ -135,7 +109,6 @@ impl<'a> Decoder<'a> {
                 7 => (values[0] == values[1]) as usize,
                 _ => panic!("unknown operator {}", ptype),
             };
-            println!("{:indent$}value {}", "", value, indent = indent);
         }
         (version, value)
     }
@@ -143,7 +116,7 @@ impl<'a> Decoder<'a> {
 
 pub fn run(input: &[u8]) -> (usize, usize) {
     let mut decoder = Decoder::new(input);
-    decoder.get_contents(0)
+    decoder.get_contents()
 }
 
 pub fn day16(args: &crate::File) -> Result<()> {
