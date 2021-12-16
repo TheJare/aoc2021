@@ -40,18 +40,6 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    pub fn with_pos(source: &'a [u8], pos: usize, len: usize) -> Self {
-        Self {
-            source,
-            pos,
-            len: pos + len,
-        }
-    }
-
-    pub fn bits_left(&self) -> usize {
-        self.len - self.pos
-    }
-
     pub fn get(&mut self, n: usize) -> usize {
         if self.pos + n <= self.len {
             let mut v = 0usize;
@@ -82,22 +70,17 @@ impl<'a> Decoder<'a> {
         } else {
             let len_type = self.get(1);
             let mut values = vec![0; 0];
-            if len_type == 0 {
-                let subp_len = self.get(15);
-                let mut sub_decoder = Decoder::with_pos(self.source, self.pos, subp_len);
-                self.pos += subp_len;
-                while sub_decoder.bits_left() > 0 {
-                    let (versions, value) = sub_decoder.get_contents();
-                    version += versions;
-                    values.push(value);
-                }
+            let mut num = self.get(if len_type == 0 { 15 } else { 11 });
+            let len = if len_type == 0 {
+                self.pos + num
             } else {
-                let subp_num = self.get(11);
-                for _ in 0..subp_num {
-                    let (versions, value) = self.get_contents();
-                    version += versions;
-                    values.push(value);
-                }
+                self.len
+            };
+            while self.pos < len && num > 0 {
+                let (versions, value) = self.get_contents();
+                version += versions;
+                values.push(value);
+                num -= (len_type != 0) as usize; // can just sub 1 always but meh
             }
             value = match ptype {
                 0 => values.iter().sum::<usize>(),
