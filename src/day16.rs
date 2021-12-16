@@ -4,23 +4,10 @@ use itertools::Itertools;
 
 // https://adventofcode.com/2021/day/16
 
-fn hex_value(c: char) -> u8 {
-    let c = c as u8;
-    if c >= b'a' {
-        c - b'a' + 10
-    } else if c >= b'A' {
-        c - b'A' + 10
-    } else {
-        c - b'0'
-    }
-}
-
 pub fn read_input(args: &crate::File) -> Result<Vec<u8>> {
     let file = read_file(&args.file)?;
-    let input = file
-        .chars()
-        .tuples()
-        .map(|(h, l)| (hex_value(h) << 4) | hex_value(l))
+    let input = (0..file.len() / 2)
+        .flat_map(|i| u8::from_str_radix(&file[i * 2..i * 2 + 2], 16))
         .collect_vec();
     Ok(input)
 }
