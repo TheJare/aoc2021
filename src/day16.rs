@@ -27,7 +27,7 @@ impl<'a> Decoder<'a> {
         }
     }
 
-    pub fn get(&mut self, n: usize) -> usize {
+    pub fn get_bits(&mut self, n: usize) -> usize {
         if self.pos + n <= self.len {
             let mut v = 0usize;
             for nbit in self.pos..(self.pos + n) {
@@ -43,22 +43,22 @@ impl<'a> Decoder<'a> {
     }
 
     pub fn get_contents(&mut self) -> (usize, usize) {
-        let mut version = self.get(3);
-        let ptype = self.get(3);
+        let mut version = self.get_bits(3);
+        let ptype = self.get_bits(3);
         let mut value = 0;
         if ptype == 4 {
             loop {
-                let d = self.get(5);
+                let d = self.get_bits(5);
                 value = (value << 4) + (d & 0xF);
                 if (d & 0x10) == 0 {
                     break;
                 }
             }
         } else {
-            let len_type = self.get(1);
-            let mut values = vec![0; 0];
-            let mut num = self.get(if len_type == 0 { 15 } else { 11 });
-            let len = if len_type == 0 {
+            let num_is_bits = self.get_bits(1) == 0;
+            let mut values = vec![];
+            let mut num = self.get_bits(if num_is_bits { 15 } else { 11 });
+            let len = if num_is_bits {
                 self.pos + num
             } else {
                 self.len
@@ -67,17 +67,17 @@ impl<'a> Decoder<'a> {
                 let (versions, value) = self.get_contents();
                 version += versions;
                 values.push(value);
-                num -= (len_type != 0) as usize; // can just sub 1 always but meh
+                num -= !num_is_bits as usize; // can just sub 1 always but meh
             }
-            value = match ptype {
-                0 => values.iter().sum::<usize>(),
-                1 => values.iter().product(),
-                2 => *values.iter().min().unwrap(),
-                3 => *values.iter().max().unwrap(),
-                5 => (values[0] > values[1]) as usize,
-                6 => (values[0] < values[1]) as usize,
-                7 => (values[0] == values[1]) as usize,
-                _ => panic!("unknown operator {}", ptype),
+            value = match (ptype, &values[..]) {
+                (0, _) => values.iter().sum::<usize>(),
+                (1, _) => values.iter().product(),
+                (2, _) if !values.is_empty() => *values.iter().min().unwrap(),
+                (3, _) if !values.is_empty() => *values.iter().max().unwrap(),
+                (5, &[a, b]) => (a > b) as usize,
+                (6, &[a, b]) => (a < b) as usize,
+                (7, &[a, b]) => (a == b) as usize,
+                _ => panic!("unknown operator {} or broken operands {:?}", ptype, values),
             };
         }
         (version, value)
