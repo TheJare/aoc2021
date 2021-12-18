@@ -60,14 +60,20 @@ pub fn read_input(args: &crate::File) -> Result<Vec<Fish>> {
     Ok(input)
 }
 
-pub fn magnitude(num: &[i32], pos: usize) -> (i32, usize) {
-    let c = num[pos];
-    if c < 0 {
-        let (s1, pos) = magnitude(num, pos + 1);
-        let (s2, pos) = magnitude(num, pos);
-        (3 * s1 + 2 * s2, pos)
-    } else {
-        (c, pos + 1)
+pub fn add(a: &mut Fish, b: &mut Fish) -> Fish {
+    let mut r = vec![-1; 1];
+    r.append(a);
+    r.append(b);
+    cleanup(&mut r);
+    r
+}
+
+fn spread_num<'a>(it: impl Iterator<Item = &'a mut i32>, a: i32) {
+    for j in it {
+        if *j >= 0 {
+            *j += a;
+            break;
+        }
     }
 }
 
@@ -80,18 +86,8 @@ pub fn explode(num: &mut Fish, i: usize, depth: usize) -> Option<usize> {
             let mut r = num[0..i].to_vec();
             r.push(0);
             r.append(&mut num[(i + 3)..].to_vec());
-            for j in r[..i].iter_mut().rev() {
-                if *j >= 0 {
-                    *j += a;
-                    break;
-                }
-            }
-            for j in r.iter_mut().skip(i + 1) {
-                if *j >= 0 {
-                    *j += b;
-                    break;
-                }
-            }
+            spread_num(r[..i].iter_mut().rev(), a);
+            spread_num(r[i + 1..].iter_mut(), b);
             // println!(" -> {}", fmt_fish(&r));
             *num = r;
             None
@@ -111,9 +107,9 @@ pub fn split(num: &mut Fish) -> bool {
             // println!("split {} in {}", num[i], fmt_fish(num));
             let a = num[i] / 2;
             let b = num[i] - a;
-            let mut r = num[0..i].to_vec();
+            let mut r = num[..i].to_vec();
             r.append(&mut vec![-1, a, b]);
-            r.append(&mut num[(i + 1)..].to_vec());
+            r.append(&mut num[i + 1..].to_vec());
             // println!(" -> {}", fmt_fish(&r));
             *num = r;
             return true;
@@ -126,12 +122,15 @@ pub fn cleanup(num: &mut Fish) {
     while explode(num, 0, 0).is_none() || split(num) {}
 }
 
-pub fn add(a: &mut Fish, b: &mut Fish) -> Fish {
-    let mut r = vec![-1; 1];
-    r.append(a);
-    r.append(b);
-    cleanup(&mut r);
-    r
+pub fn magnitude(num: &[i32], pos: usize) -> (i32, usize) {
+    let c = num[pos];
+    if c < 0 {
+        let (s1, pos) = magnitude(num, pos + 1);
+        let (s2, pos) = magnitude(num, pos);
+        (3 * s1 + 2 * s2, pos)
+    } else {
+        (c, pos + 1)
+    }
 }
 
 pub fn run(nums: Vec<Fish>) -> (i32, i32) {
@@ -141,7 +140,7 @@ pub fn run(nums: Vec<Fish>) -> (i32, i32) {
         .reduce(|mut acc, mut num| add(&mut acc, &mut num))
         .unwrap();
     cleanup(&mut added);
-    println!("{}", fmt_fish(&added));
+    println!("All added: {}", fmt_fish(&added));
     let r1 = magnitude(&added, 0).0;
 
     let r2 = nums
