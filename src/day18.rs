@@ -33,14 +33,7 @@ pub fn parse_input(input: &str, mut pos: usize) -> (Fish, usize) {
             r.append(&mut b);
             return (r, pos + 1);
         } else if c.is_ascii_digit() {
-            let mut v = c as usize - b'0' as usize;
-            while let Some(c) = input.chars().nth(pos) {
-                if !c.is_ascii_digit() {
-                    break;
-                }
-                v = v * 10 + (c as usize - b'0' as usize);
-                pos += 1;
-            }
+            let v = c as usize - b'0' as usize;
             return (vec![v as i32], pos);
         }
         panic!(
