@@ -138,8 +138,8 @@ pub fn run(nums: Vec<Fish>) -> (i32, i32) {
 
     let r2 = nums
         .iter()
-        .tuple_combinations()
-        .map(|(a, b)| magnitude(&add(&mut a.clone(), &mut b.clone()), 0).0)
+        .permutations(2)
+        .map(|pair| magnitude(&add(&mut pair[0].clone(), &mut pair[1].clone()), 0).0)
         .max()
         .unwrap();
     (r1, r2)
