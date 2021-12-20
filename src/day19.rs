@@ -106,7 +106,7 @@ pub fn run(mut scanners: Vec<Scanner>) -> (usize, usize) {
             if let Some((rotated, offset)) = try_match_scanner(&main, &scanners[i]) {
                 println!("Removing scanner {}/{}", i, scanners.len());
                 main.extend(rotated.iter().map(|v| sub_points(v, &offset)));
-                scanners.remove(i);
+                scanners.swap_remove(i);
                 found = true;
                 beacons.push(offset);
             }
