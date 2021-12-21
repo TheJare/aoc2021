@@ -39,42 +39,42 @@ const COMBOS: [usize; 7] = [1, 3, 6, 7, 6, 3, 1];
 
 pub fn run_2_rec(
     cache: &mut [(usize, usize)],
-    a: usize,
-    b: usize,
-    s1: usize,
-    s2: usize,
+    pos1: usize,
+    pos2: usize,
+    score1: usize,
+    score2: usize,
 ) -> (usize, usize) {
-    let k = (a + 10 * b + 100 * s1 + 2100 * s2) as usize;
+    let k = (pos1 + 10 * pos2 + 100 * score1 + 2100 * score2) as usize;
     let r = cache[k];
     if r.0 != usize::MAX {
         return r;
     }
-    let (n1, n2) = COMBOS
+    let (wins1, wins2) = COMBOS
         .iter()
         .enumerate()
-        .fold((0, 0), |(n1, n2), (score, score_times)| {
-            let a = (a + score + 3) % 10;
-            let s1 = s1 + a + 1;
-            if s1 >= 21 {
-                (n1 + score_times, n2)
+        .fold((0, 0), |(wins1, wins2), (score, score_times)| {
+            let pos1 = (pos1 + score + 3) % 10;
+            let score1 = score1 + pos1 + 1;
+            if score1 >= 21 {
+                (wins1 + score_times, wins2)
             } else {
-                let (na2, na1) = run_2_rec(cache, b, a, s2, s1);
-                (n1 + score_times * na1, n2 + score_times * na2)
+                let (sub_wins2, sub_wins1) = run_2_rec(cache, pos2, pos1, score2, score1);
+                (wins1 + score_times * sub_wins1, wins2 + score_times * sub_wins2)
             }
         });
-    cache[k] = (n1, n2);
-    (n1, n2)
+    cache[k] = (wins1, wins2);
+    (wins1, wins2)
 }
 
-pub fn run_2(a: usize, b: usize) -> usize {
+pub fn run_2(pos1: usize, pos2: usize) -> usize {
     let mut cache = [(usize::MAX, usize::MAX); 2100 * 21];
-    let (n1, n2) = run_2_rec(&mut cache, a, b, 0, 0);
-    n1.max(n2)
+    let (wins1, wins2) = run_2_rec(&mut cache, pos1, pos2, 0, 0);
+    wins1.max(wins2)
 }
 
-pub fn run((a, b): (usize, usize)) -> (usize, usize) {
-    let r1 = run_1(a - 1, b - 1);
-    let r2 = run_2(a - 1, b - 1);
+pub fn run((input_pos1, input_pos2): (usize, usize)) -> (usize, usize) {
+    let r1 = run_1(input_pos1 - 1, input_pos2 - 1);
+    let r2 = run_2(input_pos1 - 1, input_pos2 - 1);
 
     (r1, r2)
 }
