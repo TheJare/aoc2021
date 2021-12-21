@@ -44,25 +44,29 @@ pub fn run_2_rec(
     score1: usize,
     score2: usize,
 ) -> (usize, usize) {
-    let k = (pos1 + 10 * pos2 + 100 * score1 + 2100 * score2) as usize;
-    let r = cache[k];
-    if r.0 != usize::MAX {
-        return r;
+    let cache_key = (pos1 + 10 * pos2 + 100 * score1 + 2100 * score2) as usize;
+    let cached_result = cache[cache_key];
+    if cached_result.0 != usize::MAX {
+        return cached_result;
     }
-    let (wins1, wins2) = COMBOS
-        .iter()
-        .enumerate()
-        .fold((0, 0), |(wins1, wins2), (score, score_times)| {
-            let pos1 = (pos1 + score + 3) % 10;
-            let score1 = score1 + pos1 + 1;
-            if score1 >= 21 {
-                (wins1 + score_times, wins2)
-            } else {
-                let (sub_wins2, sub_wins1) = run_2_rec(cache, pos2, pos1, score2, score1);
-                (wins1 + score_times * sub_wins1, wins2 + score_times * sub_wins2)
-            }
-        });
-    cache[k] = (wins1, wins2);
+    let (wins1, wins2) =
+        COMBOS
+            .iter()
+            .enumerate()
+            .fold((0, 0), |(wins1, wins2), (score, score_times)| {
+                let pos1 = (pos1 + score + 3) % 10;
+                let score1 = score1 + pos1 + 1;
+                if score1 >= 21 {
+                    (wins1 + score_times, wins2)
+                } else {
+                    let (sub_wins2, sub_wins1) = run_2_rec(cache, pos2, pos1, score2, score1);
+                    (
+                        wins1 + score_times * sub_wins1,
+                        wins2 + score_times * sub_wins2,
+                    )
+                }
+            });
+    cache[cache_key] = (wins1, wins2);
     (wins1, wins2)
 }
 
