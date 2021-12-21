@@ -21,7 +21,7 @@ pub fn read_input(args: &crate::File) -> Result<(Algorithm, Vec<Vec<u8>>)> {
     Ok((algorithm, map))
 }
 
-pub fn count(map: &Vec<Vec<u8>>, d: usize) -> usize {
+pub fn count(map: &[Vec<u8>], d: usize) -> usize {
     let mut r = 0;
     for (y, x) in iproduct!(d..map.len() - d, d..map[0].len() - d) {
         r += map[y][x] as usize;
@@ -29,7 +29,7 @@ pub fn count(map: &Vec<Vec<u8>>, d: usize) -> usize {
     r
 }
 
-pub fn run_step(algorithm: &Algorithm, map: &mut Vec<Vec<u8>>, d: usize) {
+pub fn run_step(algorithm: &[u8], map: &mut Vec<Vec<u8>>, d: usize) {
     let mut new_map = vec![vec![0u8; map[0].len()]; map.len()];
     for (y, x) in iproduct!(d..map.len() - d, d..map[0].len() - d) {
         let mut v = 0;
