@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::utils::read_from_file;
 use anyhow::Result;
 use itertools::Itertools;
