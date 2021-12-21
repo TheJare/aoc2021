@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::utils::read_from_file;
 use anyhow::Result;
 use itertools::Itertools;
@@ -37,7 +39,17 @@ pub fn run_1(mut a: usize, mut b: usize) -> usize {
 
 const COMBOS: [usize; 7] = [1, 3, 6, 7, 6, 3, 1];
 
-pub fn run_2_rec(a: usize, b: usize, s1: usize, s2: usize) -> (usize, usize) {
+pub fn run_2_rec(
+    cache: &mut HashMap<u16, (usize, usize)>,
+    a: usize,
+    b: usize,
+    s1: usize,
+    s2: usize,
+) -> (usize, usize) {
+    let k = (a + 10 * b + 100 * s1 + 2100 * s2) as u16;
+    if let Some(&r) = cache.get(&k) {
+        return r;
+    }
     let (mut n1, mut n2) = (0, 0);
     for (score, score_times) in COMBOS.iter().enumerate() {
         let a = (a + score + 3) % 10;
@@ -45,16 +57,17 @@ pub fn run_2_rec(a: usize, b: usize, s1: usize, s2: usize) -> (usize, usize) {
         if s1 >= 21 {
             n1 += score_times;
         } else {
-            let (na2, na1) = run_2_rec(b, a, s2, s1);
+            let (na2, na1) = run_2_rec(cache, b, a, s2, s1);
             n1 += score_times * na1;
             n2 += score_times * na2;
         }
     }
+    cache.insert(k, (n1, n2));
     (n1, n2)
 }
 
 pub fn run_2(a: usize, b: usize) -> usize {
-    let (n1, n2) = run_2_rec(a, b, 0, 0);
+    let (n1, n2) = run_2_rec(&mut HashMap::new(), a, b, 0, 0);
     n1.max(n2)
 }
 
