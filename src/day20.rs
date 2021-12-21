@@ -44,7 +44,7 @@ pub fn run_step(algorithm: &Algorithm, map: &mut Vec<Vec<u8>>, d: usize) {
 pub fn run(algorithm: Algorithm, mut map: Vec<Vec<u8>>) -> (usize, usize) {
     run_step(&algorithm, &mut map, 1);
     run_step(&algorithm, &mut map, 1);
-    let r1 = count(&map, 3);
+    let r1 = count(&map, 55);
     for _ in 2..50 {
         run_step(&algorithm, &mut map, 1);
     }
