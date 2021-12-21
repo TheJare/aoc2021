@@ -40,14 +40,15 @@ pub fn run_1(mut a: usize, mut b: usize) -> usize {
 const COMBOS: [usize; 7] = [1, 3, 6, 7, 6, 3, 1];
 
 pub fn run_2_rec(
-    cache: &mut HashMap<u16, (usize, usize)>,
+    cache: &mut [(usize, usize)],
     a: usize,
     b: usize,
     s1: usize,
     s2: usize,
 ) -> (usize, usize) {
-    let k = (a + 10 * b + 100 * s1 + 2100 * s2) as u16;
-    if let Some(&r) = cache.get(&k) {
+    let k = (a + 10 * b + 100 * s1 + 2100 * s2) as usize;
+    let r = cache[k];
+    if r.0 != usize::MAX {
         return r;
     }
     let (mut n1, mut n2) = (0, 0);
@@ -62,12 +63,13 @@ pub fn run_2_rec(
             n2 += score_times * na2;
         }
     }
-    cache.insert(k, (n1, n2));
+    cache[k] = (n1, n2);
     (n1, n2)
 }
 
 pub fn run_2(a: usize, b: usize) -> usize {
-    let (n1, n2) = run_2_rec(&mut HashMap::new(), a, b, 0, 0);
+    let mut cache = [(usize::MAX, usize::MAX); 2100 * 21];
+    let (n1, n2) = run_2_rec(&mut cache, a, b, 0, 0);
     n1.max(n2)
 }
 
