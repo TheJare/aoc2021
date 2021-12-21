@@ -49,18 +49,19 @@ pub fn run_2_rec(
     if r.0 != usize::MAX {
         return r;
     }
-    let (mut n1, mut n2) = (0, 0);
-    for (score, score_times) in COMBOS.iter().enumerate() {
-        let a = (a + score + 3) % 10;
-        let s1 = s1 + a + 1;
-        if s1 >= 21 {
-            n1 += score_times;
-        } else {
-            let (na2, na1) = run_2_rec(cache, b, a, s2, s1);
-            n1 += score_times * na1;
-            n2 += score_times * na2;
-        }
-    }
+    let (n1, n2) = COMBOS
+        .iter()
+        .enumerate()
+        .fold((0, 0), |(n1, n2), (score, score_times)| {
+            let a = (a + score + 3) % 10;
+            let s1 = s1 + a + 1;
+            if s1 >= 21 {
+                (n1 + score_times, n2)
+            } else {
+                let (na2, na1) = run_2_rec(cache, b, a, s2, s1);
+                (n1 + score_times * na1, n2 + score_times * na2)
+            }
+        });
     cache[k] = (n1, n2);
     (n1, n2)
 }
