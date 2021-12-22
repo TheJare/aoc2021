@@ -17,6 +17,7 @@ pub mod day1_2020;
 pub mod day2;
 pub mod day20;
 pub mod day21;
+pub mod day22;
 pub mod day3;
 pub mod day4;
 pub mod day5;
@@ -56,6 +57,7 @@ pub enum AocEntries {
     Day19(File),
     Day20(File),
     Day21(File),
+    Day22(File),
     Day1_1_2020(File),
     Day1_2_2020(File),
 }

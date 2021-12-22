@@ -1,7 +1,7 @@
 use anyhow::Result;
 use aoc2021::{
     day1, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day1_2020, day2,
-    day20, day21, day3, day4, day5, day6, day7, day8, day9, AocEntries,
+    day20, day21, day22, day3, day4, day5, day6, day7, day8, day9, AocEntries,
 };
 use structopt::StructOpt;
 
@@ -30,6 +30,7 @@ fn main() -> Result<()> {
         AocEntries::Day19(args) => day19::day19(&args),
         AocEntries::Day20(args) => day20::day20(&args),
         AocEntries::Day21(args) => day21::day21(&args),
+        AocEntries::Day22(args) => day22::day22(&args),
         AocEntries::Day1_1_2020(args) => day1_2020::day1(&args),
         AocEntries::Day1_2_2020(args) => day1_2020::day1_2(&args),
     }
