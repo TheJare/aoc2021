@@ -104,7 +104,7 @@ pub fn run_2(input: &[Command]) -> usize {
             state = state2;
         }
     }
-    println!("{:?}", state);
+    // println!("{:?}", state);
     state
         .iter()
         .map(|(p0, p1)| ((p1.0 - p0.0) * (p1.1 - p0.1) * (p1.2 - p0.2)) as usize)
@@ -132,7 +132,7 @@ pub fn run(input: &[Command]) -> (usize, usize) {
 
 pub fn day22(args: &crate::File) -> Result<()> {
     let input = read_input(args)?;
-    println!("{:?}", input);
+    // println!("{:?}", input);
 
     let result = run(&input);
 
